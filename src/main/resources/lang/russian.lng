@@ -1,0 +1,5 @@
+lng_load_fail: Failed to load languages from file. Default message used
+lng_save_fail: Не удалось сохранить файл перевода
+lng_print_fail: Не удалось отобразить сообщение (%1%). Получатель - null.
+lng_config: '[MESSAGES] Сообщений: %1% Язык: %2% Режим отладки: %3%'
+err_fail_to_connect: 'Не удалось подключить к: %1% (имя: %2%)'
