@@ -8,6 +8,7 @@ import com.j256.ormlite.support.ConnectionSource;
 import ru.nukkit.dblib.util.Message;
 
 import java.io.File;
+import java.io.IOException;
 
 public class DbLibPlugin extends PluginBase {
 
@@ -41,14 +42,18 @@ public class DbLibPlugin extends PluginBase {
 
     private void load(){
         this.getDataFolder().mkdirs();
-
-        Config cfg = new Config(new File(this.getDataFolder(),"config.yml"),Config.YAML);
+        File f = new File(this.getDataFolder(),"config.yml");
+        if (!f.exists()) try {
+            f.createNewFile();
+        } catch (IOException e) {
+        }
+        Config cfg = new Config(f,Config.YAML);
         this.dbUseMySQL = cfg.getNested("DbLib.use-MySQL",false);
         this.debugLog = cfg.getNested("DbLib.ORMLite-debug",false);
 
         this.dbFileName = cfg.getNested("SQLite.file-name",new File(this.getDataFolder().getParent()).getParent()+File.separator+"nukkit.db");
 
-        this.dbMySqlUrl =  cfg.getNested("MySQL.url","localhost");
+        this.dbMySqlUrl =  cfg.getNested("MySQL.host",cfg.getNested("MySQL.url","localhost"));
         this.dbMySqlPort = cfg.getNested("MySQL.port",3306);
         this.dbMySqlDatabase = cfg.getNested("MySQL.database","db");
         this.dbMySqlUsername = cfg.getNested("MySQL.username","nukkit");
@@ -64,7 +69,7 @@ public class DbLibPlugin extends PluginBase {
 
         cfg.setNested("SQLite.file-name",this.dbFileName);
 
-        cfg.setNested("MySQL.url",this.dbMySqlUrl);
+        cfg.setNested("MySQL.host",this.dbMySqlUrl);
         cfg.setNested("MySQL.port",this.dbMySqlPort);
         cfg.setNested("MySQL.database",this.dbMySqlDatabase);
         cfg.setNested("MySQL.username",this.dbMySqlUsername);
@@ -77,6 +82,8 @@ public class DbLibPlugin extends PluginBase {
         load();
         save();
         System.setProperty(LocalLog.LOCAL_LOG_LEVEL_PROPERTY, this.debugLog ? "DEBUG" : "ERROR");
+        String dbUrl = this.getDbUrl();
+        Message.URL_LOG.log("NOCOLOR",dbUrl,this.dbMySqlUsername);
         this.connectionSource = DbLib.getConnectionSource(this.getDbUrl(),this.dbMySqlUsername,this.dbMySqlPassword);
     }
 
@@ -87,7 +94,7 @@ public class DbLibPlugin extends PluginBase {
     String getDbUrl() {
         StringBuilder sb = new StringBuilder("jdbc:");
         if (this.dbUseMySQL) {
-            sb.append("jdbc:mysql://");
+            sb.append("mysql://");
             sb.append(this.dbMySqlUrl);
             sb.append(":").append(this.dbMySqlPort);
             sb.append("/").append(this.dbMySqlDatabase);

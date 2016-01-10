@@ -43,13 +43,12 @@ Here is example of creating new table:
     } catch (Exception e) {
       return false;
     }
-    return true;
+    return true; //  Table created!
   }
 ```
 
 But if you going to use any other database you must use this method:
 ```
-  DbLib.getConnectionSoruce(String url, String userName, String password);
-
+  ConnectionSource connectionSource = DbLib.getConnectionSoruce(String url, String userName, String password);
 ```
 

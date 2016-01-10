@@ -19,7 +19,8 @@ public enum Message {
 	LNG_SAVE_FAIL ("Failed to save language file"),
 	LNG_PRINT_FAIL ("Failed to print message %1%. Sender object is null."),
 	LNG_CONFIG ("[MESSAGES] Messages: %1% Language: %2% Debug mode: %3%"),
-	ERR_FAIL_TO_CONNECT("Failed to connect to: %1% (user: %2%)",'c');
+	ERR_FAIL_TO_CONNECT("Failed to connect to: %1% (user: %2%)",'c'),
+    URL_LOG("Connecting to: %1% (user: %2%)");
 
     private static boolean debugMode = false;
     private static String language = "english";
