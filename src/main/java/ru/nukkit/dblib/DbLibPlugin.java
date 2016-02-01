@@ -48,32 +48,32 @@ public class DbLibPlugin extends PluginBase {
         } catch (IOException e) {
         }
         Config cfg = new Config(f,Config.YAML);
-        this.dbUseMySQL = cfg.getNested("DbLib.use-MySQL",false);
-        this.debugLog = cfg.getNested("DbLib.ORMLite-debug",false);
+        this.dbUseMySQL = cfg.getBoolean("DbLib.use-MySQL",false);
+        this.debugLog = cfg.getBoolean("DbLib.ORMLite-debug",false);
 
-        this.dbFileName = cfg.getNested("SQLite.file-name",new File(this.getDataFolder().getParent()).getParent()+File.separator+"nukkit.db");
+        this.dbFileName = cfg.getString("SQLite.file-name",new File(this.getDataFolder().getParent()).getParent()+File.separator+"nukkit.db");
 
-        this.dbMySqlUrl =  cfg.getNested("MySQL.host",cfg.getNested("MySQL.url","localhost"));
-        this.dbMySqlPort = cfg.getNested("MySQL.port",3306);
-        this.dbMySqlDatabase = cfg.getNested("MySQL.database","db");
-        this.dbMySqlUsername = cfg.getNested("MySQL.username","nukkit");
-        this.dbMySqlPassword = cfg.getNested("MySQL.password","tikkun");
+        this.dbMySqlUrl =  cfg.getString("MySQL.host",cfg.getString("MySQL.url","localhost"));
+        this.dbMySqlPort = cfg.getInt("MySQL.port",3306);
+        this.dbMySqlDatabase = cfg.getString("MySQL.database","db");
+        this.dbMySqlUsername = cfg.getString("MySQL.username","nukkit");
+        this.dbMySqlPassword = cfg.getString("MySQL.password","tikkun");
     }
     private void save(){
         this.getDataFolder().mkdirs();
         File f = new File(this.getDataFolder(),"config.yml");
         if (f.exists()) f.delete();
         Config cfg = new Config(f,Config.YAML);
-        cfg.setNested("DbLib.use-MySQL",this.dbUseMySQL);
-        cfg.setNested("DbLib.ORMLite-debug",this.debugLog);
+        cfg.set("DbLib.use-MySQL",this.dbUseMySQL);
+        cfg.set("DbLib.ORMLite-debug",this.debugLog);
 
-        cfg.setNested("SQLite.file-name",this.dbFileName);
+        cfg.set("SQLite.file-name",this.dbFileName);
 
-        cfg.setNested("MySQL.host",this.dbMySqlUrl);
-        cfg.setNested("MySQL.port",this.dbMySqlPort);
-        cfg.setNested("MySQL.database",this.dbMySqlDatabase);
-        cfg.setNested("MySQL.username",this.dbMySqlUsername);
-        cfg.setNested("MySQL.password",this.dbMySqlPassword);
+        cfg.set("MySQL.host",this.dbMySqlUrl);
+        cfg.set("MySQL.port",this.dbMySqlPort);
+        cfg.set("MySQL.database",this.dbMySqlDatabase);
+        cfg.set("MySQL.username",this.dbMySqlUsername);
+        cfg.set("MySQL.password",this.dbMySqlPassword);
 
         cfg.save();
     }

@@ -3,6 +3,8 @@ DbLib a library for nukkit, that include ORMLite and drivers for MySQL and SQLit
 
 [Download at nukkit.ru](http://nukkit.ru/resources/dblib.14/)
 
+Example project: [DbExample](https://github.com/fromgate/DbExample)
+
 
 ## Features
 
