@@ -34,6 +34,8 @@ public class DbLibPlugin extends PluginBase {
     @Override
     public void onEnable(){
         plugin = this;
+        load();
+        save();
         Message.init(this);
         getLogger().info(TextFormat.YELLOW+"DbLib "+this.getDescription().getVersion()+" created by fromgate for nukkit.ru");
         initDb();
@@ -79,8 +81,6 @@ public class DbLibPlugin extends PluginBase {
     }
 
     private void initDb(){
-        load();
-        save();
         System.setProperty(LocalLog.LOCAL_LOG_LEVEL_PROPERTY, this.debugLog ? "DEBUG" : "ERROR");
         String dbUrl = this.getDbUrl();
         Message.URL_LOG.log("NOCOLOR",dbUrl,this.dbMySqlUsername);
