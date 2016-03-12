@@ -12,7 +12,7 @@ public class DbLibPlugin extends PluginBase {
     ConnectionSource connectionSource = null;
 
     private static DbLibPlugin plugin;
-    static DbLibPlugin getPlugin() {
+    public static DbLibPlugin getPlugin() {
         return plugin;
     }
 
