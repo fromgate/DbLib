@@ -77,6 +77,14 @@ public class DbLib {
     }
 
     /**
+     * Create and return default JDBC Connection
+     * @return          - Connection (SQL)
+     */
+    public static Connection getDefaultConnection(){
+        return DbLibPlugin.getPlugin().getDefaultJdbcConnection();
+    }
+
+    /**
      * Get new MySQL Connection
      * This connections is not related to ORMLite, you must prepare and execute queries manually
      *

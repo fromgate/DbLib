@@ -8,6 +8,9 @@ import org.sql2o.Sql2o;
 import ru.nukkit.dblib.util.DbLibCfg;
 import ru.nukkit.dblib.util.Message;
 
+import java.io.File;
+import java.sql.Connection;
+
 public class DbLibPlugin extends PluginBase {
 
     ConnectionSource connectionSource = null;
@@ -23,14 +26,14 @@ public class DbLibPlugin extends PluginBase {
     private boolean debugLog;
 
     @Override
-    public void onEnable(){
+    public void onLoad(){
         plugin = this;
         this.cfg = new DbLibCfg(this);
         this.cfg.load();
         this.cfg.save();
         Message.init(this);
-        getLogger().info(TextFormat.YELLOW+"DbLib "+this.getDescription().getVersion()+" created by fromgate for nukkit.ru");
         initDb();
+        getLogger().info(TextFormat.colorize("&eDbLib "+this.getDescription().getVersion()+" created by fromgate for nukkit.ru"));
     }
 
     private void initDb(){
@@ -49,7 +52,11 @@ public class DbLibPlugin extends PluginBase {
 
     Sql2o getDefautlSql2o(){
         return this.sql2o;
+    }
 
+    Connection getDefaultJdbcConnection(){
+         return cfg.dbUseMySQL ? DbLib.getMySqlConnection (cfg.dbMySqlUrl, cfg.dbMySqlPort, cfg.dbMySqlDatabase,
+                 cfg.dbMySqlUsername, cfg.dbMySqlPassword) : DbLib.getSQLiteConnection(new File(cfg.dbFileName));
     }
 
     String getDbUrl() {
