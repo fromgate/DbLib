@@ -12,6 +12,42 @@ Example project: [DbExample](https://github.com/fromgate/DbExample)
 * Includes popular library ORMLite, that provides access to database without using SQL-queries;
 * Organizes universal data storage for all plugins, that uses DbLib. Server owner must configure DbLib once and all plugins that use DbLib will work fine!
 
+## Configuration
+```
+general:
+# Messages language
+# Supported languages: russian, english
+  language: english 
+# Debug mode. Usually you don't need to enable this parameter
+  debug-mode: false
+DbLib:
+# ORMLite specific parameters
+  ORMLite:
+# ORMLite debug mode. Set true to see more messages :)
+    debug: false
+# Keep-alive time interval (ms) for ORMLite connections
+# Increase this value if your database server timeout connections is too low
+# Set 0 to disable this mode (usually it's ok)
+    keep-alive-interval: 0
+
+# Database type:
+#  true - MySQL
+#  false - SQLite
+  use-MySQL: false
+
+# # Full path to sqlite file
+SQLite:
+  file-name: C:\NukkitServer\nukkit.db
+  
+# MySQL connections parameters
+MySQL:
+  host: localhost
+  port: 3306
+  database: db
+  username: nukkit
+  password: tikkun
+```
+
 ## How to use plugin (Server owners must read this)
 If any plugin requires a DbLib you just need to download and install it. Usually it will be enough. But if you going to use to MySQL or another sqlite file you need to configure plugin (Read at Config section)
 
