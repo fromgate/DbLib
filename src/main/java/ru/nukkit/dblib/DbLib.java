@@ -4,6 +4,7 @@ import cn.nukkit.plugin.Plugin;
 import cn.nukkit.utils.Config;
 import cn.nukkit.utils.ConfigSection;
 import com.j256.ormlite.jdbc.JdbcConnectionSource;
+import com.j256.ormlite.jdbc.JdbcPooledConnectionSource;
 import com.j256.ormlite.support.ConnectionSource;
 import org.sql2o.Sql2o;
 import ru.nukkit.dblib.util.Message;
@@ -37,14 +38,19 @@ public class DbLib {
      * @return - ConnectionSource (ORMlite)
      */
     public static ConnectionSource getConnectionSource(String url, String userName, String password) {
-        ConnectionSource connectionSource = null;
         try {
-            connectionSource = new JdbcConnectionSource(url, userName, password);
+            if (DbLibPlugin.getPlugin().getOrmLiteKeepAlive() <= 0) {
+                return new JdbcConnectionSource(url, userName, password);
+            } else {
+                JdbcPooledConnectionSource jdbcCon = new JdbcPooledConnectionSource(url, userName, password);
+                jdbcCon.setCheckConnectionsEveryMillis(DbLibPlugin.getPlugin().getOrmLiteKeepAlive());
+                return jdbcCon;
+            }
         } catch (SQLException e) {
             Message.ERR_FAIL_TO_CONNECT.log(url, userName, 'c');
             e.printStackTrace();
         }
-        return connectionSource;
+        return null;
     }
 
     /**
@@ -65,22 +71,23 @@ public class DbLib {
     /**
      * Get custom MySQL ORMLite connection source.
      *
-     * @param host      - MySQL server host name
-     * @param port      - MySQL server port (use -1 to default value)
-     * @param database  - MySQL database
-     * @param user      - MySQL user name
-     * @param password  - MySQL password
-     * @return          - ConnectionSource (ORMlite)
+     * @param host     - MySQL server host name
+     * @param port     - MySQL server port (use -1 to default value)
+     * @param database - MySQL database
+     * @param user     - MySQL user name
+     * @param password - MySQL password
+     * @return - ConnectionSource (ORMlite)
      */
     public static ConnectionSource getConnectionSourceMySql(String host, int port, String database, String user, String password) {
-        return getConnectionSource(getMySqlUrl(host,port,database), user, password);
+        return getConnectionSource(getMySqlUrl(host, port, database), user, password);
     }
 
     /**
      * Create and return default JDBC Connection
-     * @return          - Connection (SQL)
+     *
+     * @return - Connection (SQL)
      */
-    public static Connection getDefaultConnection(){
+    public static Connection getDefaultConnection() {
         return DbLibPlugin.getPlugin().getDefaultJdbcConnection();
     }
 
@@ -88,10 +95,10 @@ public class DbLib {
      * Get new MySQL Connection
      * This connections is not related to ORMLite, you must prepare and execute queries manually
      *
-     * @param url       - MySQL url, example: localhost:3306/db
-     * @param user      - MySQL user name
-     * @param password  - MySQL password
-     * @return          - Connection (SQL)
+     * @param url      - MySQL url, example: localhost:3306/db
+     * @param user     - MySQL user name
+     * @param password - MySQL password
+     * @return - Connection (SQL)
      */
     public static Connection getMySqlConnection(String url, String user, String password) {
         try {
@@ -154,24 +161,24 @@ public class DbLib {
     /**
      * Get Sql2o object for MySQL database
      *
-     * @param host      - host (ip)
-     * @param port      - port, if lesser than 1 will used default value 3306
-     * @param database  - MySQL database name
-     * @param userName  - user name
-     * @param password  - password
-     * @return          - Sql2o object
+     * @param host     - host (ip)
+     * @param port     - port, if lesser than 1 will used default value 3306
+     * @param database - MySQL database name
+     * @param userName - user name
+     * @param password - password
+     * @return - Sql2o object
      */
     public static Sql2o getSql2oMySql(String host, int port, String database, String userName, String password) {
-        return getSql2o(getMySqlUrl(host, port,database), userName, password);
+        return getSql2o(getMySqlUrl(host, port, database), userName, password);
     }
 
     /**
      * Get Sql2o object using jdbc-url and username password
      *
-     * @param url       - jdbc-url
-     * @param userName  - user name
-     * @param password  - password
-     * @return          - Sql2o object
+     * @param url      - jdbc-url
+     * @param userName - user name
+     * @param password - password
+     * @return - Sql2o object
      */
     public static Sql2o getSql2o(String url, String userName, String password) {
         return new Sql2o(url, userName, password);
@@ -182,7 +189,7 @@ public class DbLib {
      *
      * @return
      */
-    public static Sql2o getSql2o(){
+    public static Sql2o getSql2o() {
         return DbLibPlugin.getPlugin().getDefautlSql2o();
     }
 
@@ -191,8 +198,8 @@ public class DbLib {
      * Config section format:
      * type: DBLIB # MYSQL - MySQL database, SQLITI - sqlite database, DBLIB - default (configured in DbLib)
      *
-     * @param section   - ConfigSection
-     * @return          - URL
+     * @param section - ConfigSection
+     * @return - URL
      */
     public static String getUrlFromConfig(ConfigSection section) {
         String url = DbLibPlugin.getPlugin().getDbUrl();
@@ -212,12 +219,12 @@ public class DbLib {
     /**
      * Get jdbc-url for MySQL file
      *
-     * @param host          - MySQL host
-     * @param port          - MySQL port
-     * @param database      - MySQL database name
-     * @return              - URL
+     * @param host     - MySQL host
+     * @param port     - MySQL port
+     * @param database - MySQL database name
+     * @return - URL
      */
-    public static String getMySqlUrl(String host, int port, String database){
+    public static String getMySqlUrl(String host, int port, String database) {
         StringBuilder sb = new StringBuilder("jdbc:mysql://").append(host);
         if (port >= 0) sb.append(":").append(port);
         sb.append("/").append(database).append("?useSSL=false");
@@ -227,29 +234,29 @@ public class DbLib {
     /**
      * Get jdbc-url for SQlite file
      *
-     * @param fileName  - file name
-     * @return          - URL
+     * @param fileName - file name
+     * @return - URL
      */
-    public static String getSqliteUrl(String fileName){
+    public static String getSqliteUrl(String fileName) {
         return new StringBuilder("jdbc:sqlite:").append(fileName).toString();
     }
 
     /**
      * Get jdbc-url for SQlite file
      *
-     * @param file  - file object
-     * @return      - URL
+     * @param file - file object
+     * @return - URL
      */
-    public static String getSqliteUrl(File file){
+    public static String getSqliteUrl(File file) {
         return new StringBuilder("jdbc:sqlite:").append(file.getAbsolutePath()).toString();
     }
 
     /**
      * Get jdbc-url from config file, defined in secktiob key
      *
-     * @param cfg   - Config file
-     * @param key   - Section in config file
-     * @return      - URL
+     * @param cfg - Config file
+     * @param key - Section in config file
+     * @return - URL
      */
     public static String getUrlFromConfig(Config cfg, String key) {
         return getUrlFromConfig(cfg.isSection(key) ? cfg.getSection(key) : null);
