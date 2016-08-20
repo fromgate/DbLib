@@ -8,8 +8,9 @@ Example project: [DbExample](https://github.com/fromgate/DbExample)
 
 ## Features
 
-* Provides acces to popular database engines: SQLite and MySQL;
-* Includes popular library ORMLite, that provides access to database without using SQL-queries;
+* Provide access to popular database jdbc-drivers: SQLite and MySQL;
+* Include popular library ORMLite, that provides access to database without using SQL-queries;
+* Include great Sql2o engine. Make your queries easy :)
 * Organizes universal data storage for all plugins, that uses DbLib. Server owner must configure DbLib once and all plugins that use DbLib will work fine!
 
 ## Configuration
@@ -52,7 +53,9 @@ MySQL:
 If any plugin requires a DbLib you just need to download and install it. Usually it will be enough. But if you going to use to MySQL or another sqlite file you need to configure plugin (Read at Config section)
 
 ## Note for plugin developers
-**ORMLite** is popular engine, that provides access to databases using ORM technique. Practically it means that you can read and save data into dabase without writing SQL-queries.
+[**ORMLite**](http://ormlite.com/) is popular engine, that provides access to databases using ORM technique. Practically it means that you can read and save data into dabase without writing SQL-queries.
+
+[**Sql2o**](http://www.sql2o.org/) is small useful framework that makes coding for database easy. 
 
 DbLib also include database drivers:
 
