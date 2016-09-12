@@ -1,20 +1,11 @@
-package ru.nukkit.dblib.util;
+package ru.nukkit.dblib;
 
-import cn.nukkit.Player;
-import cn.nukkit.Server;
-import cn.nukkit.command.CommandSender;
-import cn.nukkit.level.Location;
-import cn.nukkit.plugin.PluginBase;
-import cn.nukkit.utils.Config;
-import cn.nukkit.utils.TextFormat;
-
-import java.io.File;
 import java.text.DecimalFormat;
-
+import java.util.*;
 
 public enum Message {
 
-    //Default (language) messages
+    //Default (lang) messages
     LNG_LOAD_FAIL("Failed to load languages from file. Default message used"),
     LNG_SAVE_FAIL("Failed to save language file"),
     LNG_PRINT_FAIL("Failed to print message %1%. Sender object is null."),
@@ -22,12 +13,21 @@ public enum Message {
     ERR_FAIL_TO_CONNECT("Failed to connect to: %1% (user: %2%)", 'c'),
     URL_LOG("Connecting to: %1% (user: %2%)");
 
+
+    private static Messenger messenger;
+
     private static boolean debugMode = false;
-    private static String language = "english";
+    private static String language = "default";
+    private static boolean saveLanguage = false;
     private static char c1 = 'a';
     private static char c2 = '2';
+    private static String pluginName;
 
-    private static PluginBase plugin = null;
+
+    public static String colorize(String text) {
+        return messenger.colorize(text);
+    }
+
 
     /**
      * This is my favorite debug routine :) I use it everywhere to print out variable values
@@ -39,12 +39,12 @@ public enum Message {
     public static void BC(Object... s) {
         if (!debugMode) return;
         if (s.length == 0) return;
-        StringBuilder sb = new StringBuilder("&3[").append(plugin.getDescription().getName()).append("]&f ");
+        StringBuilder sb = new StringBuilder("&3[").append(pluginName).append("]&f ");
         for (Object str : s)
             sb.append(str.toString()).append(" ");
-        plugin.getServer().broadcastMessage(TextFormat.colorize(sb.toString().trim()));
-    }
 
+        messenger.broadcast(colorize(sb.toString().trim()));
+    }
 
     /**
      * Send current message to log files
@@ -56,7 +56,7 @@ public enum Message {
      * return Message.ERROR_MESSAGE.log(variable1); // print in log and return value true
      */
     public boolean log(Object... s) {
-        plugin.getLogger().info(getText(s));
+        messenger.log(getText(s));
         return true;
     }
 
@@ -67,7 +67,8 @@ public enum Message {
      * @return — always returns true.
      */
     public boolean debug(Object... s) {
-        if (debugMode) plugin.getLogger().info(TextFormat.clean(getText(s)));
+        if (debugMode)
+            log(messenger.clean(getText(s)));
         return true;
     }
 
@@ -79,6 +80,10 @@ public enum Message {
      * @param s
      * @return — always returns true.
      */
+    public boolean tip(int seconds, Object sender, Object... s) {
+        return messenger.tip(seconds, sender, getText(s));
+    }
+    /*
     public boolean tip(int seconds, CommandSender sender, Object... s) {
         if (sender == null) return Message.LNG_PRINT_FAIL.log(this.name());
         final Player player = sender instanceof Player ? (Player) sender : null;
@@ -91,7 +96,7 @@ public enum Message {
                 }
             }, 20 * i);
         return true;
-    }
+    } */
 
     /**
      * Show a message to player in center of screen
@@ -100,13 +105,8 @@ public enum Message {
      * @param s
      * @return — always returns true.
      */
-    public boolean tip(CommandSender sender, Object... s) {
-        if (sender == null) return Message.LNG_PRINT_FAIL.log(this.name());
-        Player player = sender instanceof Player ? (Player) sender : null;
-        String message = getText(s);
-        if (player == null) sender.sendMessage(message);
-        else player.sendTip(message);
-        return true;
+    public boolean tip(Object sender, Object... s) {
+        return messenger.tip(sender, getText(s));
     }
 
     /**
@@ -116,10 +116,9 @@ public enum Message {
      * @param s
      * @return — always returns true.
      */
-    public boolean print(CommandSender sender, Object... s) {
+    public boolean print(Object sender, Object... s) {
         if (sender == null) return Message.LNG_PRINT_FAIL.log(this.name());
-        sender.sendMessage(getText(s));
-        return true;
+        return messenger.print(sender, getText(s));
     }
 
     /**
@@ -134,10 +133,7 @@ public enum Message {
      * Message.MSG_BROADCAST.broadcast (null); // send message to all players
      */
     public boolean broadcast(String permission, Object... s) {
-        for (Player player : plugin.getServer().getOnlinePlayers().values()) {
-            if (permission == null || player.hasPermission(permission)) print(player, s);
-        }
-        return true;
+        return messenger.broadcast(permission, getText(s));
     }
 
 
@@ -167,19 +163,23 @@ public enum Message {
      */
     public String getText(Object... keys) {
         char[] colors = new char[]{color1 == null ? c1 : color1, color2 == null ? c2 : color2};
-        if (keys.length == 0) return TextFormat.colorize("&" + colors[0] + this.message);
+        if (keys.length == 0) return colorize("&" + colors[0] + this.message);
         String str = this.message;
         boolean noColors = false;
         boolean skipDefaultColors = false;
         boolean fullFloat = false;
+        String prefix = "";
         int count = 1;
         int c = 0;
         DecimalFormat fmt = new DecimalFormat("####0.##");
         for (int i = 0; i < keys.length; i++) {
-            String s = keys[i].toString();
+            String s = messenger.toString(keys[i], fullFloat);//keys[i].toString();
             if (c < 2 && keys[i] instanceof Character) {
                 colors[c] = (Character) keys[i];
                 c++;
+                continue;
+            } else if (s.startsWith("prefix:")) {
+                prefix = s.replace("prefix:", "");
                 continue;
             } else if (s.equals("SKIPCOLOR")) {
                 skipDefaultColors = true;
@@ -190,12 +190,6 @@ public enum Message {
             } else if (s.equals("FULLFLOAT")) {
                 fullFloat = true;
                 continue;
-            } else if (keys[i] instanceof Location) {
-                Location loc = (Location) keys[i];
-                if (fullFloat)
-                    s = loc.getLevel().getName() + "[" + loc.getX() + ", " + loc.getY() + ", " + loc.getZ() + "]";
-                else
-                    s = loc.getLevel().getName() + "[" + fmt.format(loc.getX()) + ", " + fmt.format(loc.getY()) + ", " + fmt.format(loc.getZ()) + "]";
             } else if (keys[i] instanceof Double || keys[i] instanceof Float) {
                 if (!fullFloat) s = fmt.format((Double) keys[i]);
             }
@@ -205,9 +199,13 @@ public enum Message {
             str = str.replace(from, to);
             count++;
         }
-        str = TextFormat.colorize("&" + colors[0] + str);
-        if (noColors) str = TextFormat.clean(str);
+        str = colorize(prefix.isEmpty() ? "&" + colors[0] + str : prefix + " " + "&" + colors[0] + str);
+        if (noColors) str = clean(str);
         return str;
+    }
+
+    public static String clean(String str) {
+        return messenger.clean(str);
     }
 
     private void initMessage(String message) {
@@ -242,18 +240,14 @@ public enum Message {
     /**
      * Initialize current class, load messages, etc.
      * Call this file in onEnable method after initializing plugin configuration
-     *
-     * @param plg
      */
-    public static void init(PluginBase plg) {
-        plugin = plg;
-        language = plg.getConfig().getString("general.language", "english");
-        plg.getConfig().set("general.language", language);
-        debugMode = plg.getConfig().getBoolean("general.debug-mode", false);
-        plg.getConfig().set("general.debug-mode", debugMode);
-        plg.saveConfig();
+    public static void init(String pluginName, Messenger mess, String lang, boolean debug, boolean save) {
+        messenger = mess;
+        language = lang;
+        debugMode = debug;
+        saveLanguage = save;
         initMessages();
-        saveMessages();
+        if (saveLanguage) saveMessages();
         LNG_CONFIG.debug(Message.values().length, language, true, debugMode);
     }
 
@@ -266,38 +260,26 @@ public enum Message {
         debugMode = debug;
     }
 
-    private static boolean copyLanguage() {
-        return plugin.saveResource("lang/" + language + ".lng", language + ".lng", false);
+    public static boolean isDebug() {
+        return debugMode;
     }
 
-    private static void initMessages() {
-        copyLanguage();
 
-        Config lng = null;
-        try {
-            File f = new File(plugin.getDataFolder() + File.separator + language + ".lng");
-            lng = new Config(f, Config.YAML);
-        } catch (Exception e) {
-            LNG_LOAD_FAIL.log();
-            if (debugMode) e.printStackTrace();
-            return;
+    private static void initMessages() {
+        Map<String, String> lng = messenger.load(language);
+        for (Message key : Message.values()) {
+            if (lng.containsKey(key.name().toLowerCase())) {
+                key.initMessage(lng.get(key.name().toLowerCase()));
+            }
         }
-        for (Message key : Message.values())
-            key.initMessage((String) lng.get(key.name().toLowerCase(), key.message));
     }
 
     private static void saveMessages() {
-        File f = new File(plugin.getDataFolder() + File.separator + language + ".lng");
-        Config lng = new Config(f, Config.YAML);
-        for (Message key : Message.values())
-            lng.set(key.name().toLowerCase(), key.message);
-        try {
-            lng.save();
-        } catch (Exception e) {
-            LNG_SAVE_FAIL.log();
-            if (debugMode) e.printStackTrace();
-            return;
+        Map<String, String> messages = new LinkedHashMap<String, String>();
+        for (Message msg : Message.values()) {
+            messages.put(msg.name().toLowerCase(), msg.message);
         }
+        messenger.save(language, messages);
     }
 
     /**
@@ -306,7 +288,7 @@ public enum Message {
      * @param s
      */
     public static boolean debugMessage(Object... s) {
-        if (debugMode) plugin.getLogger().info(TextFormat.clean(join(s)));
+        if (debugMode) messenger.log(clean(join(s)));
         return true;
     }
 
@@ -319,8 +301,48 @@ public enum Message {
         StringBuilder sb = new StringBuilder();
         for (Object o : s) {
             if (sb.length() > 0) sb.append(" ");
-            sb.append(o.toString());
+            sb.append(messenger.toString(o, false));
         }
         return sb.toString();
+    }
+
+    public static void printLines(Object sender, Collection<String> lines) {
+        for (String l : lines) {
+            messenger.print(sender, colorize(l));
+        }
+    }
+
+    public static void printPage(Object sender, List<String> lines, Message title, int pageNum, int linesPerPage) {
+        printPage(sender, lines, title, null, pageNum, linesPerPage);
+    }
+
+    public static void printPage(Object sender, List<String> lines, Message title, Message footer, int pageNum, int linesPerPage) {
+        if (lines == null || lines.isEmpty()) return;
+        List<String> page = new ArrayList<String>();
+        if (title != null) page.add(title.message);
+
+        int pageCount = lines.size() / linesPerPage + 1;
+        if (pageCount * linesPerPage == lines.size()) pageCount = pageCount - 1;
+
+        int num = pageCount <= pageNum ? pageNum : 1;
+
+        for (int i = linesPerPage * (num - 1); i < Math.min(lines.size(), num * linesPerPage); i++) {
+            page.add(lines.get(i));
+        }
+        if (footer != null) page.add(num, footer.getText(pageCount));
+        printLines(sender, page);
+    }
+
+    public static boolean logMessage(Object... s) {
+        if (debugMode) messenger.log(clean(join(s)));
+        return true;
+    }
+
+
+    public static Message getByName(String name) {
+        for (Message m : values()){
+            if (m.name().equalsIgnoreCase(name)) return m;
+        }
+        return null;
     }
 }

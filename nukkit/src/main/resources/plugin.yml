@@ -1,6 +1,6 @@
 name: DbLib
-main: ru.nukkit.dblib.DbLibPlugin
-version: "0.1.3"
+main: ru.nukkit.dblib.nukkit.DbLibPlugin
+version: "0.2.0"
 author: fromgate, nukkit.ru
 api: ["1.0.0"]
 description: SQLite/MySQL library for Nukkit plugins

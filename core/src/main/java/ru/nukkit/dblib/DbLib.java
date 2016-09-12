@@ -1,13 +1,10 @@
 package ru.nukkit.dblib;
 
-import cn.nukkit.plugin.Plugin;
-import cn.nukkit.utils.Config;
-import cn.nukkit.utils.ConfigSection;
 import com.j256.ormlite.jdbc.JdbcConnectionSource;
 import com.j256.ormlite.jdbc.JdbcPooledConnectionSource;
+import com.j256.ormlite.logger.LocalLog;
 import com.j256.ormlite.support.ConnectionSource;
 import org.sql2o.Sql2o;
-import ru.nukkit.dblib.util.Message;
 
 import java.io.File;
 import java.sql.Connection;
@@ -16,6 +13,24 @@ import java.sql.SQLException;
 
 public class DbLib {
 
+    private static Cfg config;
+    private static ConnectionSource connectionSource = null;
+    private static Sql2o sql2o = null;
+    private static File folder;
+
+
+    public static void init (Cfg cfg, File dataFolder){
+        config = cfg;
+        folder = dataFolder;
+        System.setProperty(LocalLog.LOCAL_LOG_LEVEL_PROPERTY, config.debugLog() ? "DEBUG" : "ERROR");
+        String dbUrl = config.getDbUrl();
+        Message.URL_LOG.log("NOCOLOR", dbUrl, config.dbMySqlUsername());
+        String url = config.getDbUrl();
+        connectionSource = DbLib.getConnectionSource(url, config.dbMySqlUsername(), config.dbMySqlPassword());
+        sql2o = config.dbUseMySQL() ? DbLib.getSql2o(url, config.dbMySqlUsername(), config.dbMySqlPassword()) :
+                DbLib.getSql2o(url, config.dbMySqlUsername(), "");
+    }
+
     /**
      * Get DbLib's default ORMLite connection source.
      * All plugins used this method will share same database
@@ -23,7 +38,7 @@ public class DbLib {
      * @return - ConnectionSource (ORMlite)
      */
     public static ConnectionSource getConnectionSource() {
-        return DbLibPlugin.getPlugin().getDefaultORMLiteConnection();
+        return connectionSource;
     }
 
     /**
@@ -39,11 +54,11 @@ public class DbLib {
      */
     public static ConnectionSource getConnectionSource(String url, String userName, String password) {
         try {
-            if (DbLibPlugin.getPlugin().getOrmLiteKeepAlive() <= 0) {
+            if (config.ormLiteKeepAlive() <= 0) {
                 return new JdbcConnectionSource(url, userName, password);
             } else {
                 JdbcPooledConnectionSource jdbcCon = new JdbcPooledConnectionSource(url, userName, password);
-                jdbcCon.setCheckConnectionsEveryMillis(DbLibPlugin.getPlugin().getOrmLiteKeepAlive());
+                jdbcCon.setCheckConnectionsEveryMillis(config.ormLiteKeepAlive());
                 return jdbcCon;
             }
         } catch (SQLException e) {
@@ -56,12 +71,11 @@ public class DbLib {
     /**
      * Get custom SQLite ORMLite connection source.
      *
-     * @param plugin   - plugin executing this method, database file will be located in plugin's data folder
      * @param fileName - database file name
      * @return - ConnectionSource (ORMlite)
      */
-    public static ConnectionSource getConnectionSourceSQLite(Plugin plugin, String fileName) {
-        File f = new File(plugin.getDataFolder() + File.separator + fileName);
+    public static ConnectionSource getConnectionSourceSQLite(String fileName) {
+        File f = new File(folder + File.separator + fileName);
         File dir = new File(f.getParent());
         dir.mkdirs();
         String url = "jdbc:sqlite:" + f.getAbsolutePath();
@@ -88,7 +102,9 @@ public class DbLib {
      * @return - Connection (SQL)
      */
     public static Connection getDefaultConnection() {
-        return DbLibPlugin.getPlugin().getDefaultJdbcConnection();
+        return config.dbUseMySQL() ? DbLib.getMySqlConnection(config.dbMySqlUrl(), config.dbMySqlPort(),
+                config.dbMySqlDatabase(), config.dbMySqlUsername(), config.dbMySqlPassword())
+                : DbLib.getSQLiteConnection(new File(config.dbFileName()));
     }
 
     /**
@@ -132,13 +148,12 @@ public class DbLib {
      * Get new SQLite Connection
      * This connections is not related to ORMLite, you must prepare and execute queries manually
      *
-     * @param plugin   - Your plugin (only data folder value will be accessed)
      * @param fileName - file name
      * @return - Connection (SQL)
      */
-    public static Connection getSQLiteConnection(Plugin plugin, String fileName) {
-        plugin.getDataFolder().mkdirs();
-        return getSQLiteConnection(new File(plugin.getDataFolder() + File.separator + fileName));
+    public static Connection getSQLiteConnection(String fileName) {
+        folder.mkdirs();
+        return getSQLiteConnection(new File(folder+ File.separator + fileName));
     }
 
 
@@ -190,7 +205,7 @@ public class DbLib {
      * @return
      */
     public static Sql2o getSql2o() {
-        return DbLibPlugin.getPlugin().getDefautlSql2o();
+        return sql2o;
     }
 
     /**
@@ -201,6 +216,7 @@ public class DbLib {
      * @param section - ConfigSection
      * @return - URL
      */
+    /*
     public static String getUrlFromConfig(ConfigSection section) {
         String url = DbLibPlugin.getPlugin().getDbUrl();
         if (section != null && !section.isEmpty()) {
@@ -215,7 +231,7 @@ public class DbLib {
         }
         return url;
     }
-
+*/
     /**
      * Get jdbc-url for MySQL file
      *
@@ -258,7 +274,9 @@ public class DbLib {
      * @param key - Section in config file
      * @return - URL
      */
+    /*
     public static String getUrlFromConfig(Config cfg, String key) {
         return getUrlFromConfig(cfg.isSection(key) ? cfg.getSection(key) : null);
     }
+    */
 }
