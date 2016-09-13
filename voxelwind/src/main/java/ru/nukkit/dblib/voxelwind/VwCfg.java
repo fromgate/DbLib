@@ -61,7 +61,7 @@ public class VwCfg implements Cfg {
 
     public static class SQLiteParams {
         @JsonProperty("file-name")
-        public String dbFileName = DbLibPlugin.getFile("nukkit.db").toFile().toString();
+        public String dbFileName = DbLibPlugin.getFile("database.db").toFile().toString();
     }
 
     public static class MySQLParams {
@@ -149,9 +149,14 @@ public class VwCfg implements Cfg {
         return false;
     }
 
-    public static VwCfg load(Path path) throws IOException {
-        try (BufferedReader reader = Files.newBufferedReader(path)) {
-            return VoxelwindServer.MAPPER.readValue(reader, VwCfg.class);
+    public static VwCfg load(Path path) {
+        try {
+            try (BufferedReader reader = Files.newBufferedReader(path)) {
+                return VoxelwindServer.MAPPER.readValue(reader, VwCfg.class);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            return new VwCfg();
         }
     }
 }

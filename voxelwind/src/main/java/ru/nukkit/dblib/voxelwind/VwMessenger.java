@@ -31,7 +31,7 @@ public class VwMessenger implements Messenger {
 
     @Override
     public boolean log(String text) {
-        DbLibPlugin.getLogger();
+        DbLibPlugin.getLogger().info(text);
         return true;
     }
 
@@ -92,20 +92,19 @@ public class VwMessenger implements Messenger {
         Map<String,String> msg = null;
         ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
         TypeReference<HashMap<String,String>> typeRef = new TypeReference<HashMap<String,String>>() {};
-
         File f = DbLibPlugin.getFile(language+".lng").toFile();
         if (f.exists()) {
             try {
                 msg = mapper.readValue(f, typeRef);
             } catch (IOException e) {
-                e.printStackTrace();
+                // failed to load from the file
             }
         } else {
             InputStream is = DbLibPlugin.getPlugin().getClass().getResourceAsStream("/lang/" + language + ".lng");
             try {
                 msg = mapper.readValue(is, typeRef);
             } catch (IOException e) {
-                e.printStackTrace();
+                // failed to load from resource
             }
         }
         return msg;

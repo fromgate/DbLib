@@ -53,16 +53,13 @@ public class DbLibPlugin {
     @Listener
     public void onServerStart(ServerStartEvent event) {
         plugin = this;
-
-        logger.info(path.toString());
-
         try {
             Files.createDirectories(path);
         } catch (IOException e) {
             logger.info("Failed to create plugin directory");
         }
-        cfg = new VwCfg();
 
+        cfg = VwCfg.load(Paths.get(path.toString(), "config.json"));
         cfg.save(Paths.get(path.toString(), "config.json"));
 
         Message.init("DbLib", new VwMessenger(), cfg.language(), cfg.debugMode(), cfg.saveLanguage());

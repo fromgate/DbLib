@@ -243,7 +243,7 @@ public enum Message {
      */
     public static void init(String pluginName, Messenger mess, String lang, boolean debug, boolean save) {
         messenger = mess;
-        language = lang;
+        language = lang.equalsIgnoreCase("default") ? "eng" : lang;
         debugMode = debug;
         saveLanguage = save;
         initMessages();
