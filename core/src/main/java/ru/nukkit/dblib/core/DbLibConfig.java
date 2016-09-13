@@ -1,6 +1,6 @@
-package ru.nukkit.dblib;
+package ru.nukkit.dblib.core;
 
-public interface Cfg {
+public interface DbLibConfig {
 
     String language();
 

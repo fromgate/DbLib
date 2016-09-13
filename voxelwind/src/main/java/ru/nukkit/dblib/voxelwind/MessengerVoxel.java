@@ -6,7 +6,7 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.voxelwind.api.game.util.TextFormat;
 import com.voxelwind.api.server.MessageRecipient;
 import com.voxelwind.api.server.Player;
-import ru.nukkit.dblib.Messenger;
+import ru.nukkit.dblib.core.Messenger;
 
 import java.io.File;
 import java.io.IOException;
@@ -14,8 +14,7 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
-public class VwMessenger implements Messenger {
-
+public class MessengerVoxel implements Messenger {
 
 
     @Override
@@ -89,7 +88,7 @@ public class VwMessenger implements Messenger {
 
     @Override
     public Map<String, String> load(String language) {
-        Map<String,String> msg = null;
+        Map<String, String> msg = null;
         ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
         TypeReference<HashMap<String,String>> typeRef = new TypeReference<HashMap<String,String>>() {};
         File f = DbLibPlugin.getFile(language+".lng").toFile();
@@ -113,7 +112,7 @@ public class VwMessenger implements Messenger {
     @Override
     public void save(String language, Map<String, String> message) {
         YAMLFactory yf = new YAMLFactory();
-        File f = DbLibPlugin.getFile(language+".lng").toFile();
+        File f = DbLibPlugin.getFile(language + ".lng").toFile();
         ObjectMapper mapper = new ObjectMapper(yf);
         try {
             mapper.writeValue(f, message);
@@ -131,8 +130,8 @@ public class VwMessenger implements Messenger {
     public static String colorize(char altFormatChar, String textToTranslate) {
         char[] b = textToTranslate.toCharArray();
 
-        for(int i = 0; i < b.length - 1; ++i) {
-            if(b[i] == altFormatChar && "0123456789AaBbCcDdEeFfKkLlMmNnOoRr".indexOf(b[i + 1]) > -1) {
+        for (int i = 0; i < b.length - 1; ++i) {
+            if (b[i] == altFormatChar && "0123456789AaBbCcDdEeFfKkLlMmNnOoRr".indexOf(b[i + 1]) > -1) {
                 b[i] = 167;
                 b[i + 1] = Character.toLowerCase(b[i + 1]);
             }
@@ -146,7 +145,7 @@ public class VwMessenger implements Messenger {
         return sender instanceof MessageRecipient ? (MessageRecipient) sender : null;
     }
 
-    public Player toPlayer (Object sender) {
+    public Player toPlayer(Object sender) {
         return sender instanceof Player ? (Player) sender : null;
     }
 

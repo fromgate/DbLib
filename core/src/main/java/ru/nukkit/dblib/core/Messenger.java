@@ -1,4 +1,4 @@
-package ru.nukkit.dblib;
+package ru.nukkit.dblib.core;
 
 import java.util.Map;
 

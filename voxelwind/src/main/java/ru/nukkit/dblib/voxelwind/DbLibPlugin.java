@@ -6,7 +6,7 @@ import com.voxelwind.api.server.event.Listener;
 import com.voxelwind.api.server.event.server.ServerStartEvent;
 import org.slf4j.Logger;
 import ru.nukkit.dblib.DbLib;
-import ru.nukkit.dblib.Message;
+import ru.nukkit.dblib.core.Message;
 
 import javax.inject.Inject;
 import java.io.IOException;
@@ -22,7 +22,7 @@ public class DbLibPlugin {
     private Path path;
 
     @Inject
-    public DbLibPlugin(Server server, Logger logger, Path path){
+    public DbLibPlugin(Server server, Logger logger, Path path) {
         this.server = server;
         this.logger = logger;
         try {
@@ -35,19 +35,19 @@ public class DbLibPlugin {
 
     private static DbLibPlugin plugin;
 
-    public static DbLibPlugin getPlugin(){
+    public static DbLibPlugin getPlugin() {
         return plugin;
     }
 
-    public static Path getDataFolder(){
+    public static Path getDataFolder() {
         return getPlugin().path;
     }
 
-    public static Path getFile(String fileName){
+    public static Path getFile(String fileName) {
         return getPlugin().path.resolve(fileName);
     }
 
-    private VwCfg cfg;
+    private ConfigVoxel cfg;
 
 
     @Listener
@@ -59,10 +59,10 @@ public class DbLibPlugin {
             logger.info("Failed to create plugin directory");
         }
 
-        cfg = VwCfg.load(Paths.get(path.toString(), "config.json"));
+        cfg = ConfigVoxel.load(Paths.get(path.toString(), "config.json"));
         cfg.save(Paths.get(path.toString(), "config.json"));
 
-        Message.init("DbLib", new VwMessenger(), cfg.language(), cfg.debugMode(), cfg.saveLanguage());
+        Message.init("DbLib", new MessengerVoxel(), cfg.language(), cfg.debugMode(), cfg.saveLanguage());
 
         DbLib.init(cfg, path.toFile());
     }

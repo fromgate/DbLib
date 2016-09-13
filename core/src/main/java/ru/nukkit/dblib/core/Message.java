@@ -1,4 +1,4 @@
-package ru.nukkit.dblib;
+package ru.nukkit.dblib.core;
 
 import java.text.DecimalFormat;
 import java.util.*;
@@ -340,7 +340,7 @@ public enum Message {
 
 
     public static Message getByName(String name) {
-        for (Message m : values()){
+        for (Message m : values()) {
             if (m.name().equalsIgnoreCase(name)) return m;
         }
         return null;

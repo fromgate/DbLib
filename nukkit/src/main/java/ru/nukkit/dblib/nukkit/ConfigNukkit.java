@@ -2,22 +2,22 @@ package ru.nukkit.dblib.nukkit;
 
 import cn.nukkit.plugin.Plugin;
 import cn.nukkit.utils.SimpleConfig;
-import ru.nukkit.dblib.Cfg;
+import ru.nukkit.dblib.core.DbLibConfig;
 
 import java.io.File;
 
-public class DbLibCfg extends SimpleConfig implements Cfg {
-    public DbLibCfg(Plugin plugin) {
+public class ConfigNukkit extends SimpleConfig implements DbLibConfig {
+    public ConfigNukkit(Plugin plugin) {
         super(plugin);
     }
 
-    @Path ("general.language")
+    @Path("general.language")
     public String language = "default";
 
-    @Path ("general.save-translation")
+    @Path("general.save-translation")
     public boolean saveLanguage = false;
 
-    @Path ("general.debug-mode")
+    @Path("general.debug-mode")
     boolean debugMode = false;
 
     @Path("DbLib.use-MySQL")

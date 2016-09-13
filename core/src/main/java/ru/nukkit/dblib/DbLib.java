@@ -5,6 +5,8 @@ import com.j256.ormlite.jdbc.JdbcPooledConnectionSource;
 import com.j256.ormlite.logger.LocalLog;
 import com.j256.ormlite.support.ConnectionSource;
 import org.sql2o.Sql2o;
+import ru.nukkit.dblib.core.DbLibConfig;
+import ru.nukkit.dblib.core.Message;
 
 import java.io.File;
 import java.sql.Connection;
@@ -13,13 +15,13 @@ import java.sql.SQLException;
 
 public class DbLib {
 
-    private static Cfg config;
+    private static DbLibConfig config;
     private static ConnectionSource connectionSource = null;
     private static Sql2o sql2o = null;
     private static File folder;
 
 
-    public static void init (Cfg cfg, File dataFolder){
+    public static void init(DbLibConfig cfg, File dataFolder) {
         config = cfg;
         folder = dataFolder;
         System.setProperty(LocalLog.LOCAL_LOG_LEVEL_PROPERTY, config.debugLog() ? "DEBUG" : "ERROR");
@@ -153,7 +155,7 @@ public class DbLib {
      */
     public static Connection getSQLiteConnection(String fileName) {
         folder.mkdirs();
-        return getSQLiteConnection(new File(folder+ File.separator + fileName));
+        return getSQLiteConnection(new File(folder + File.separator + fileName));
     }
 
 
@@ -209,30 +211,6 @@ public class DbLib {
     }
 
     /**
-     * Get jdbc-url from config section.
-     * Config section format:
-     * type: DBLIB # MYSQL - MySQL database, SQLITI - sqlite database, DBLIB - default (configured in DbLib)
-     *
-     * @param section - ConfigSection
-     * @return - URL
-     */
-    /*
-    public static String getUrlFromConfig(ConfigSection section) {
-        String url = DbLibPlugin.getPlugin().getDbUrl();
-        if (section != null && !section.isEmpty()) {
-            if (section.getString("type").equalsIgnoreCase("mysql")) {
-                url = getMySqlUrl(section.get("mysql.host", "localhost"),
-                        section.isInt("mysql.port") ? section.getInt("mysql.port", 3306) :
-                                Integer.parseInt(section.getString("mysql.port", "3306")),
-                        section.getString("mysql.database", "db"));
-            } else if (section.getString("type").equalsIgnoreCase("sqlite")) {
-                url = getSqliteUrl(section.getString("file", "data.db"));
-            }
-        }
-        return url;
-    }
-*/
-    /**
      * Get jdbc-url for MySQL file
      *
      * @param host     - MySQL host
@@ -266,17 +244,4 @@ public class DbLib {
     public static String getSqliteUrl(File file) {
         return new StringBuilder("jdbc:sqlite:").append(file.getAbsolutePath()).toString();
     }
-
-    /**
-     * Get jdbc-url from config file, defined in secktiob key
-     *
-     * @param cfg - Config file
-     * @param key - Section in config file
-     * @return - URL
-     */
-    /*
-    public static String getUrlFromConfig(Config cfg, String key) {
-        return getUrlFromConfig(cfg.isSection(key) ? cfg.getSection(key) : null);
-    }
-    */
 }

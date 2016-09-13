@@ -3,4 +3,4 @@ main: ru.nukkit.dblib.nukkit.DbLibPlugin
 version: "0.2.0"
 author: fromgate, nukkit.ru
 api: ["1.0.0"]
-description: SQLite/MySQL library for Nukkit plugins
+description: SQLite/MySQL library for your plugins (Nukkit/Voxelwind)

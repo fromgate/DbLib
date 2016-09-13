@@ -3,7 +3,7 @@ package ru.nukkit.dblib.voxelwind;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.voxelwind.server.VoxelwindServer;
-import ru.nukkit.dblib.Cfg;
+import ru.nukkit.dblib.core.DbLibConfig;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -12,22 +12,22 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 
-public class VwCfg implements Cfg {
+public class ConfigVoxel implements DbLibConfig {
 
 
-    @JsonProperty ("general")
+    @JsonProperty("general")
     public GeneralParams generalParams = new GeneralParams();
 
-    @JsonProperty ("DbLib")
+    @JsonProperty("DbLib")
     public DbLibParams dbLibParams = new DbLibParams();
 
-    @JsonProperty ("ORMLite")
+    @JsonProperty("ORMLite")
     public ORMLiteParams ormLiteParams = new ORMLiteParams();
 
-    @JsonProperty ("SQLite")
+    @JsonProperty("SQLite")
     public SQLiteParams sqliteParams = new SQLiteParams();
 
-    @JsonProperty ("MySQL")
+    @JsonProperty("MySQL")
     public MySQLParams mySqlParams = new MySQLParams();
 
 
@@ -41,7 +41,6 @@ public class VwCfg implements Cfg {
         @JsonProperty("debug-mode")
         boolean debugMode = false;
     }
-
 
 
     public static class DbLibParams {
@@ -85,14 +84,13 @@ public class VwCfg implements Cfg {
     }
 
     @JsonIgnore
-    public String getDbUrl (){
-        return Cfg.super.getDbUrl();
+    public String getDbUrl() {
+        return DbLibConfig.super.getDbUrl();
     }
 
     public String language() {
         return this.generalParams.language;
     }
-
 
 
     public boolean saveLanguage() {
@@ -139,24 +137,24 @@ public class VwCfg implements Cfg {
         return ormLiteParams.ormLiteKeepAlive;
     }
 
-    public boolean save(Path path){
+    public boolean save(Path path) {
         try (BufferedWriter writer = Files.newBufferedWriter(path, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING)) {
             VoxelwindServer.MAPPER.writerWithDefaultPrettyPrinter().writeValue(writer, this);
             return true;
-        } catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return false;
     }
 
-    public static VwCfg load(Path path) {
+    public static ConfigVoxel load(Path path) {
         try {
             try (BufferedReader reader = Files.newBufferedReader(path)) {
-                return VoxelwindServer.MAPPER.readValue(reader, VwCfg.class);
+                return VoxelwindServer.MAPPER.readValue(reader, ConfigVoxel.class);
             }
         } catch (IOException e) {
             e.printStackTrace();
-            return new VwCfg();
+            return new ConfigVoxel();
         }
     }
 }

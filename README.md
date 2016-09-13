@@ -1,5 +1,5 @@
 # DbLib
-DbLib a library for nukkit, that include ORMLite and drivers for MySQL and SQLite.
+DbLib a library for Nukkit and Voxelwind, that include ORMLite, Sql2o and jdbc-connectors (MySQL and SQLite).
 
 [Download at nukkit.ru](http://nukkit.ru/resources/dblib.14/)
 
@@ -14,6 +14,7 @@ Example project: [DbExample](https://github.com/fromgate/DbExample)
 * Organizes universal data storage for all plugins, that uses DbLib. Server owner must configure DbLib once and all plugins that use DbLib will work fine!
 
 ## Configuration
+Configuration file named config.yml in Nukkit and config.json in Voxelwind.
 ```
 general:
 # Messages language
