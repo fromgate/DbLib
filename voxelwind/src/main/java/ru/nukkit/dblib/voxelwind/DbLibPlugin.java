@@ -14,7 +14,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-@Plugin(id = "DbLib", author = "fromgate", version = "0.2.0")
+@Plugin(id = "DbLib", author = "fromgate", version = "0.2.1")
 public class DbLibPlugin {
 
     private final Server server;

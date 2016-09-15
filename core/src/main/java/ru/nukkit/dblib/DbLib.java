@@ -28,6 +28,11 @@ public class DbLib {
         String dbUrl = config.getDbUrl();
         Message.URL_LOG.log("NOCOLOR", dbUrl, config.dbMySqlUsername());
         String url = config.getDbUrl();
+        try {
+            Class.forName("com.mysql.jdbc.Driver");
+            Class.forName("org.sqlite.JDBC");
+        } catch (ClassNotFoundException e) {
+        }
         connectionSource = DbLib.getConnectionSource(url, config.dbMySqlUsername(), config.dbMySqlPassword());
         sql2o = config.dbUseMySQL() ? DbLib.getSql2o(url, config.dbMySqlUsername(), config.dbMySqlPassword()) :
                 DbLib.getSql2o(url, config.dbMySqlUsername(), "");
