@@ -1,0 +1,28 @@
+# DbLib plugin for Nukiit and Voxelwind (universal jar)
+# http://nukkit.ru/resources/dblib.14/
+#
+general:
+  language: default
+  save-translation: false
+  debug-mode: false
+
+# Plugin Configuation
+DbLib:
+# true - use MySQL, false - use SQLite
+  use-MySQL: false
+# ORMLite configuration
+  ORMLite:
+    debug: false
+    keep-alive-interval: 1000
+
+# SQLite file
+SQLite:
+  file-name: nukkit.db
+
+# MySQL Configuration
+MySQL:
+  host: localhost
+  port: 3306
+  database: db
+  username: nukkit
+  password: tikkun

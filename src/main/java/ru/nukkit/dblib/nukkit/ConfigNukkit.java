@@ -106,4 +106,9 @@ public class ConfigNukkit extends SimpleConfig implements DbLibConfig {
     public int ormLiteKeepAlive() {
         return ormLiteKeepAlive;
     }
+
+    @Override
+    public boolean save(){
+        return super.save();
+    }
 }

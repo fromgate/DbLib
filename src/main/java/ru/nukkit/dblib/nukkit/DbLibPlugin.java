@@ -21,10 +21,9 @@ public class DbLibPlugin extends PluginBase {
     @Override
     public void onLoad() {
         plugin = this;
+        this.saveDefaultConfig();
         this.cfg = new ConfigNukkit(this);
-
         this.cfg.load();
-        this.cfg.save();
         Message.init("DbLib", new MessengerNukkit(this), cfg.language, cfg.debugMode, cfg.saveLanguage);
         DbLib.init(cfg, this.getDataFolder());
         getLogger().info(TextFormat.colorize("&eDbLib " + this.getDescription().getVersion() + " created by fromgate for nukkit.ru"));
