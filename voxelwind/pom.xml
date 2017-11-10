@@ -11,13 +11,24 @@
 
     <groupId>ru.nukkit.dblib.voxelwind</groupId>
     <artifactId>DbLibVoxelwind</artifactId>
+
     <dependencies>
         <dependency>
             <groupId>ru.nukkit.dblib.core</groupId>
             <artifactId>DbLibCore</artifactId>
             <version>1.0-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.voxelwind</groupId>
+            <artifactId>voxelwind-api</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.voxelwind</groupId>
+            <artifactId>voxelwind-server</artifactId>
+            <version>1.0-SNAPSHOT</version>
         </dependency>
     </dependencies>
-
-
 </project>
