@@ -237,7 +237,7 @@ public class DbLib {
      * @return - URL
      */
     public static String getSqliteUrl(String fileName) {
-        return new StringBuilder("jdbc:sqlite:").append(fileName).toString();
+        return "jdbc:sqlite:" + fileName;
     }
 
     /**
@@ -247,6 +247,6 @@ public class DbLib {
      * @return - URL
      */
     public static String getSqliteUrl(File file) {
-        return new StringBuilder("jdbc:sqlite:").append(file.getAbsolutePath()).toString();
+        return "jdbc:sqlite:" + file.getAbsolutePath();
     }
 }
