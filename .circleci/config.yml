@@ -38,4 +38,4 @@ jobs:
           key: v1-dependencies-{{ checksum "pom.xml" }}
       - run: ls /home/circleci/repo/
       - store_artifacts:
-          path: target/
+          path: target/DbLib-1.0-SNAPSHOT.jar
