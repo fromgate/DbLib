@@ -56,10 +56,8 @@ public class MessengerNukkit implements Messenger {
         final Player player = toPlayer(sender);
         if (player != null) {
             for (int i = 0; i < seconds; i++) {
-                Server.getInstance().getScheduler().scheduleDelayedTask(new Runnable() {
-                    public void run() {
-                        if (player.isOnline()) player.sendPopup(text);
-                    }
+                Server.getInstance().getScheduler().scheduleDelayedTask(DbLibPlugin.getPlugin(), () -> {
+                    if (player.isOnline()) player.sendPopup(text);
                 }, 20 * i);
             }
         } else {
