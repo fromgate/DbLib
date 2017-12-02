@@ -37,4 +37,4 @@ jobs:
             - ~/.m2
           key: v1-dependencies-{{ checksum "pom.xml" }}
       - store_artifacts:
-          path: target/DbLib-1.0-SNAPSHOT.jar
+          path: target/
