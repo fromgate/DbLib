@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 
 import static ru.nukkit.dblib.core.Message.LNG_SAVE_FAIL;
+import static ru.nukkit.dblib.core.Message.debugException;
 
 public class MessengerNukkit implements Messenger {
 
@@ -148,6 +149,7 @@ public class MessengerNukkit implements Messenger {
             lng.save();
         } catch (Exception e) {
             LNG_SAVE_FAIL.log();
+            debugException(e);
         }
     }
 

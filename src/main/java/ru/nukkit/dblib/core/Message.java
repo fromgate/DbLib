@@ -292,6 +292,13 @@ public enum Message {
         return true;
     }
 
+    public static boolean debugException(Throwable throwable) {
+        if (debugMessage()) {
+            throwable.printStackTrace();
+        }
+        return true;
+    }
+
     /**
      * Join object array to string (separated by space)
      *

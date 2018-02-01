@@ -32,6 +32,7 @@ public class DbLib {
             Class.forName("com.mysql.jdbc.Driver");
             Class.forName("org.sqlite.JDBC");
         } catch (ClassNotFoundException e) {
+            Message.debugException(e);
         }
         connectionSource = DbLib.getConnectionSource(url, config.dbMySqlUsername(), config.dbMySqlPassword());
         sql2o = config.dbUseMySQL() ? DbLib.getSql2o(url, config.dbMySqlUsername(), config.dbMySqlPassword()) :
@@ -70,7 +71,7 @@ public class DbLib {
             }
         } catch (SQLException e) {
             Message.ERR_FAIL_TO_CONNECT.log(url, userName, 'c');
-            e.printStackTrace();
+            Message.debugException(e);
         }
         return null;
     }
@@ -127,7 +128,8 @@ public class DbLib {
         try {
             Class.forName("com.mysql.jdbc.Driver");
             return DriverManager.getConnection(url.startsWith("jdbc:mysql://") ? url : "jdbc:mysql://" + url, user, password);
-        } catch (Exception ignore) {
+        } catch (Exception e) {
+            Message.debugException(e);
         }
         return null;
     }
@@ -175,7 +177,8 @@ public class DbLib {
         try {
             Class.forName("org.sqlite.JDBC");
             return DriverManager.getConnection(getSqliteUrl(file));
-        } catch (Exception ignore) {
+        } catch (Exception e) {
+            Message.debugException(e);
         }
         return null;
     }
