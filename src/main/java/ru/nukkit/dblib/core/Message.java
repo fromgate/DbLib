@@ -293,7 +293,7 @@ public enum Message {
     }
 
     public static boolean debugException(Throwable throwable) {
-        if (debugMessage()) {
+        if (debugMode) {
             throwable.printStackTrace();
         }
         return true;
