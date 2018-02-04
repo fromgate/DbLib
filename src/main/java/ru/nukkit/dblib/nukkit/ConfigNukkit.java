@@ -2,11 +2,10 @@ package ru.nukkit.dblib.nukkit;
 
 import cn.nukkit.plugin.Plugin;
 import cn.nukkit.utils.SimpleConfig;
-import ru.nukkit.dblib.core.DbLibConfig;
 
 import java.io.File;
 
-public class ConfigNukkit extends SimpleConfig implements DbLibConfig {
+public class ConfigNukkit extends SimpleConfig {
     public ConfigNukkit(Plugin plugin) {
         super(plugin);
     }
@@ -47,62 +46,50 @@ public class ConfigNukkit extends SimpleConfig implements DbLibConfig {
     @Path("DbLib.ORMLite.keep-alive-interval")
     public int ormLiteKeepAlive = 0;
 
-    @Override
     public String language() {
         return language;
     }
 
-    @Override
     public boolean saveLanguage() {
         return saveLanguage;
     }
 
-    @Override
     public boolean debugMode() {
         return debugMode;
     }
 
-    @Override
     public boolean dbUseMySQL() {
         return dbUseMySQL;
     }
 
-    @Override
     public String dbFileName() {
         return dbFileName;
     }
 
-    @Override
     public String dbMySqlUrl() {
         return dbMySqlUrl;
     }
 
-    @Override
     public int dbMySqlPort() {
         return dbMySqlPort;
     }
 
-    @Override
     public String dbMySqlDatabase() {
         return dbMySqlDatabase;
     }
 
-    @Override
     public String dbMySqlUsername() {
         return dbMySqlUsername;
     }
 
-    @Override
     public String dbMySqlPassword() {
         return dbMySqlPassword;
     }
 
-    @Override
     public boolean debugLog() {
         return debugLog;
     }
 
-    @Override
     public int ormLiteKeepAlive() {
         return ormLiteKeepAlive;
     }
@@ -110,5 +97,20 @@ public class ConfigNukkit extends SimpleConfig implements DbLibConfig {
     @Override
     public boolean save(){
         return super.save();
+    }
+
+    public String getDbUrl() {
+        StringBuilder sb = new StringBuilder("jdbc:");
+        if (dbUseMySQL()) {
+            sb.append("mysql://")
+                    .append(dbMySqlUrl())
+                    .append(":").append(dbMySqlPort())
+                    .append("/").append(dbMySqlDatabase())
+                    .append("?useSSL=false");
+        } else {
+            sb.append("sqlite:")
+                    .append(dbFileName());
+        }
+        return sb.toString();
     }
 }

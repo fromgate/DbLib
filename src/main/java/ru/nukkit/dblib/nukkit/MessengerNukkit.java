@@ -17,8 +17,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static ru.nukkit.dblib.core.Message.LNG_SAVE_FAIL;
-import static ru.nukkit.dblib.core.Message.debugException;
+import static ru.nukkit.dblib.core.M.LNG_SAVE_FAIL;
+import static ru.nukkit.dblib.core.M.debugException;
 
 public class MessengerNukkit implements Messenger {
 

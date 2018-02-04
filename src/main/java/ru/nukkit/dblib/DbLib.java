@@ -5,8 +5,8 @@ import com.j256.ormlite.jdbc.JdbcPooledConnectionSource;
 import com.j256.ormlite.logger.LocalLog;
 import com.j256.ormlite.support.ConnectionSource;
 import org.sql2o.Sql2o;
-import ru.nukkit.dblib.core.DbLibConfig;
-import ru.nukkit.dblib.core.Message;
+import ru.nukkit.dblib.core.M;
+import ru.nukkit.dblib.nukkit.ConfigNukkit;
 
 import java.io.File;
 import java.sql.Connection;
@@ -15,24 +15,24 @@ import java.sql.SQLException;
 
 public class DbLib {
 
-    private static DbLibConfig config;
+    private static ConfigNukkit config;
     private static ConnectionSource connectionSource = null;
     private static Sql2o sql2o = null;
     private static File folder;
 
 
-    public static void init(DbLibConfig cfg, File dataFolder) {
+    public static void init(ConfigNukkit cfg, File dataFolder) {
         config = cfg;
         folder = dataFolder;
         System.setProperty(LocalLog.LOCAL_LOG_LEVEL_PROPERTY, config.debugLog() ? "DEBUG" : "ERROR");
         String dbUrl = config.getDbUrl();
-        Message.URL_LOG.log("NOCOLOR", dbUrl, config.dbMySqlUsername());
+        M.URL_LOG.log("NOCOLOR", dbUrl, config.dbMySqlUsername());
         String url = config.getDbUrl();
         try {
             Class.forName("com.mysql.jdbc.Driver");
             Class.forName("org.sqlite.JDBC");
         } catch (ClassNotFoundException e) {
-            Message.debugException(e);
+            M.debugException(e);
         }
         connectionSource = DbLib.getConnectionSource(url, config.dbMySqlUsername(), config.dbMySqlPassword());
         sql2o = config.dbUseMySQL() ? DbLib.getSql2o(url, config.dbMySqlUsername(), config.dbMySqlPassword()) :
@@ -70,8 +70,8 @@ public class DbLib {
                 return jdbcCon;
             }
         } catch (SQLException e) {
-            Message.ERR_FAIL_TO_CONNECT.log(url, userName, 'c');
-            Message.debugException(e);
+            M.ERR_FAIL_TO_CONNECT.log(url, userName, 'c');
+            M.debugException(e);
         }
         return null;
     }
@@ -129,7 +129,7 @@ public class DbLib {
             Class.forName("com.mysql.jdbc.Driver");
             return DriverManager.getConnection(url.startsWith("jdbc:mysql://") ? url : "jdbc:mysql://" + url, user, password);
         } catch (Exception e) {
-            Message.debugException(e);
+            M.debugException(e);
         }
         return null;
     }
@@ -178,7 +178,7 @@ public class DbLib {
             Class.forName("org.sqlite.JDBC");
             return DriverManager.getConnection(getSqliteUrl(file));
         } catch (Exception e) {
-            Message.debugException(e);
+            M.debugException(e);
         }
         return null;
     }

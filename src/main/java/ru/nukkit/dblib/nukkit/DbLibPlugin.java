@@ -3,7 +3,7 @@ package ru.nukkit.dblib.nukkit;
 import cn.nukkit.plugin.PluginBase;
 import cn.nukkit.utils.TextFormat;
 import ru.nukkit.dblib.DbLib;
-import ru.nukkit.dblib.core.Message;
+import ru.nukkit.dblib.core.M;
 
 public class DbLibPlugin extends PluginBase {
 
@@ -24,7 +24,7 @@ public class DbLibPlugin extends PluginBase {
         this.saveDefaultConfig();
         this.cfg = new ConfigNukkit(this);
         this.cfg.load();
-        Message.init("DbLib", new MessengerNukkit(this), cfg.language, cfg.debugMode, cfg.saveLanguage);
+        M.init("DbLib", new MessengerNukkit(this), cfg.language, cfg.debugMode, cfg.saveLanguage);
         DbLib.init(cfg, this.getDataFolder());
         getLogger().info(TextFormat.colorize("&eDbLib " + this.getDescription().getVersion() + " created by fromgate for nukkit.ru"));
     }

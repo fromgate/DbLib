@@ -3,7 +3,7 @@ package ru.nukkit.dblib.core;
 import java.text.DecimalFormat;
 import java.util.*;
 
-public enum Message {
+public enum M {
 
     //Default (lang) messages
     LNG_LOAD_FAIL("Failed to load languages from file. Default message used"),
@@ -117,7 +117,7 @@ public enum Message {
      * @return — always returns true.
      */
     public boolean print(Object sender, Object... s) {
-        if (sender == null) return Message.LNG_PRINT_FAIL.log(this.name());
+        if (sender == null) return M.LNG_PRINT_FAIL.log(this.name());
         return messenger.print(sender, getText(s));
     }
 
@@ -216,19 +216,19 @@ public enum Message {
     private Character color1;
     private Character color2;
 
-    Message(String msg) {
+    M(String msg) {
         message = msg;
         this.color1 = null;
         this.color2 = null;
     }
 
-    Message(String msg, char color1, char color2) {
+    M(String msg, char color1, char color2) {
         this.message = msg;
         this.color1 = color1;
         this.color2 = color2;
     }
 
-    Message(String msg, char color) {
+    M(String msg, char color) {
         this(msg, color, color);
     }
 
@@ -248,7 +248,7 @@ public enum Message {
         saveLanguage = save;
         initMessages();
         if (saveLanguage) saveMessages();
-        LNG_CONFIG.debug(Message.values().length, language, true, debugMode);
+        LNG_CONFIG.debug(M.values().length, language, true, debugMode);
     }
 
     /**
@@ -267,7 +267,7 @@ public enum Message {
 
     private static void initMessages() {
         Map<String, String> lng = messenger.load(language);
-        for (Message key : Message.values()) {
+        for (M key : M.values()) {
             if (lng.containsKey(key.name().toLowerCase())) {
                 key.initMessage(lng.get(key.name().toLowerCase()));
             }
@@ -276,7 +276,7 @@ public enum Message {
 
     private static void saveMessages() {
         Map<String, String> messages = new LinkedHashMap<String, String>();
-        for (Message msg : Message.values()) {
+        for (M msg : M.values()) {
             messages.put(msg.name().toLowerCase(), msg.message);
         }
         messenger.save(language, messages);
@@ -319,11 +319,11 @@ public enum Message {
         }
     }
 
-    public static void printPage(Object sender, List<String> lines, Message title, int pageNum, int linesPerPage) {
+    public static void printPage(Object sender, List<String> lines, M title, int pageNum, int linesPerPage) {
         printPage(sender, lines, title, null, pageNum, linesPerPage);
     }
 
-    public static void printPage(Object sender, List<String> lines, Message title, Message footer, int pageNum, int linesPerPage) {
+    public static void printPage(Object sender, List<String> lines, M title, M footer, int pageNum, int linesPerPage) {
         if (lines == null || lines.isEmpty()) return;
         List<String> page = new ArrayList<String>();
         if (title != null) page.add(title.message);
@@ -346,8 +346,8 @@ public enum Message {
     }
 
 
-    public static Message getByName(String name) {
-        for (Message m : values()) {
+    public static M getByName(String name) {
+        for (M m : values()) {
             if (m.name().equalsIgnoreCase(name)) return m;
         }
         return null;
