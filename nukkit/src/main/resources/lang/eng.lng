@@ -1,0 +1,6 @@
+lng_load_fail: Failed to load languages from file. Default message used
+lng_save_fail: Failed to save translation file
+lng_print_fail: Could not display message (%1%). The receiver is null.
+lng_config: '[MESSAGES] Posts:%1% Language:%2% Debug Mode:%3%'
+err_fail_to_connect: 'Could not connect to:%1% (name:%2%)'
+url_log: 'Establishing a connection with%1% (user:%2%)'
